@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const {
   Client,
   GatewayIntentBits,
@@ -15,18 +17,15 @@ const client = new Client({
   partials: [Partials.Channel]
 });
 
-// OPTIONAL: allow specific users no matter what
 const OWNER_IDS = [
   "202820904617639936"
 ];
 
-// ✅ Only these roles are allowed to USE /dmall 
 const ALLOWED_SENDER_ROLE_IDS = [
   "1419559076622241863",
   "1420478167780687935"
 ];
 
-// ✅ Only these roles will RECEIVE DMs (~20 roles)
 const TARGET_ROLE_IDS = [
   // LR
   "1419951563111141496",
