@@ -1,6 +1,23 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
+// Tiny HTTP server for Render Web Service
+const express = require("express");
+const app = express();
+
+// Render sets PORT; fallback is useful for local testing
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Bot is running");
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`HTTP server listening on port ${PORT}`);
+});
+
+
 const {
   Client,
   GatewayIntentBits,
