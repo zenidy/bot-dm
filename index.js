@@ -2,11 +2,9 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-// Tiny HTTP server for Render Web Service
 const express = require("express");
 const app = express();
 
-// Render sets PORT; fallback is useful for local testing
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
@@ -44,9 +42,27 @@ const ALLOWED_SENDER_ROLE_IDS = [
 ];
 
 const TARGET_ROLE_IDS = [
-  // LR
-  "1419951538247303251",
-  "1420478167780687935"
+// LR
+  "1419951563111141496",
+  "1419951561114783755",
+  "1419951560116666489",
+  "1419951559110033429",
+
+  // MR
+  "1419951556744315001",
+  "1419951555632955463",
+  "1419951554357887078",
+  "1419951551916675212",
+  "1419951550939533332",
+  // NCO
+  "1419951549278584882",
+  "1419951547135037522",
+  "1419951545558241290",
+  "1419951544710987867",
+  "1419951543876059226",
+  // ELITE
+  "1419951542705979473",
+  "1419951541669990480"
 
 ];
 
