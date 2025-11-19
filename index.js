@@ -187,6 +187,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         console.error("Error sending error follow-up:", e2);
       }
     }
+  }
   if (interaction.commandName === "status") {
     if (!canUseAdminCommands(interaction)) {
       return interaction.reply({
@@ -260,7 +261,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-  }
+  
 });
 
 client.login(process.env.DISCORD_TOKEN);
