@@ -16,6 +16,19 @@ app.listen(PORT, "0.0.0.0", () => {
 });
 
 
+const RENDER_URL = "https://bot-dm.onrender.com/"; 
+
+setInterval(() => {
+  fetch(RENDER_URL)
+    .then(res => {
+      console.log("Keepalive ping OK:", res.status);
+    })
+    .catch(err => {
+      console.error("Keepalive ping failed:", err.message);
+    });
+}, 5 * 60 * 1000); 
+
+
 const {
   Client,
   GatewayIntentBits,
