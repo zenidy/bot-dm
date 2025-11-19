@@ -67,7 +67,7 @@ const TARGET_ROLE_IDS = [
 ];
 
 // Check if user is allowed to use /dmall
-function canUseDmall(interaction) {
+function canUseAdminCommands(interaction) {
   if (!interaction.inGuild()) return false;
 
   // owner override
@@ -93,7 +93,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   if (interaction.commandName === "dmall") {
     // Permission check (only specific roles can use this)
-    if (!canUseDmall(interaction)) {
+    if (!canUseAdminCommands(interaction)) {
       return interaction.reply({
         content: "You don’t have permission to use this command.",
         ephemeral: true
@@ -188,6 +188,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       }
     }
   }
+
+
+  // Status command
   if (interaction.commandName === "status") {
     if (!canUseAdminCommands(interaction)) {
       return interaction.reply({
