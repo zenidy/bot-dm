@@ -199,13 +199,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
 
-    if (!GUILD_ID || !NOTIFY_ROLE_ID) {
-      return interaction.reply({
-        content: "GUILD_ID or NOTIFY_ROLE_ID is not configured on the bot.",
-        ephemeral: true
-      });
-    }
-
     const guild = interaction.guild;
 
     await interaction.reply({
@@ -255,7 +248,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error("Error in /status:", err);
       try {
         await interaction.followUp({
-          content: "❌ Something went wrong while sending status DMs.",
+          content: "Something went wrong.",
           ephemeral: true
         });
       } catch (e2) {
