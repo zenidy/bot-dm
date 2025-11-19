@@ -10,9 +10,12 @@ const commands = [
         .setName("message")
         .setDescription("The message to send to all members. You can use {user} or {mention}.")
         .setRequired(true)
-    )
-    .toJSON()
-];
+    ),
+    
+  new SlashCommandBuilder()
+    .setName("status")
+    .setDescription("DM the notify role that the bot is online and ready.")
+].map(cmd => cmd.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 

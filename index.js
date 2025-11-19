@@ -187,6 +187,79 @@ client.on(Events.InteractionCreate, async (interaction) => {
         console.error("Error sending error follow-up:", e2);
       }
     }
+  if (interaction.commandName === "status") {
+    if (!canUseAdminCommands(interaction)) {
+      return interaction.reply({
+        content: "You don’t have permission to use this command.",
+        ephemeral: true
+      });
+    }
+
+    if (!GUILD_ID || !NOTIFY_ROLE_ID) {
+      return interaction.reply({
+        content: "GUILD_ID or NOTIFY_ROLE_ID is not configured on the bot.",
+        ephemeral: true
+      });
+    }
+
+    const guild = interaction.guild;
+
+    await interaction.reply({
+      content: "Sending status DM to the notify role...",
+      ephemeral: true
+    });
+
+    try {
+      // ensure members are cached
+      await guild.members.fetch();
+
+      const targets = guild.members.cache.filter(m => {
+        if (m.user.bot) return false;
+        return m.roles.cache.has(NOTIFY_ROLE_ID);
+      });
+
+      if (targets.size === 0) {
+        return interaction.followUp({
+          content: "No members found with the notify role. Make sure it’s assigned to you.",
+          ephemeral: true
+        });
+      }
+
+      const statusMessage = "APEX Automation is online.";
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const member of targets.values()) {
+        try {
+          await member.send(statusMessage);
+          successCount++;
+          console.log(`Status DM sent to ${member.user.tag}`);
+        } catch (err) {
+          failCount++;
+          console.warn(`Failed to send status DM to ${member.user.tag}: ${err.message}`);
+        }
+      }
+
+      await interaction.followUp({
+        content:
+          `Status DMs sent.\nSuccess: **${successCount}**\nFailed: **${failCount}**`,
+        ephemeral: true
+      });
+
+    } catch (err) {
+      console.error("Error in /status:", err);
+      try {
+        await interaction.followUp({
+          content: "❌ Something went wrong while sending status DMs.",
+          ephemeral: true
+        });
+      } catch (e2) {
+        console.error("Error sending /status error follow-up:", e2);
+      }
+    }
+  }
+
   }
 });
 
