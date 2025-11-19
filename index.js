@@ -198,7 +198,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         ephemeral: true
       });
     }
-
+    const NOTIFY_ROLE_ID = "1419559076622241863";
     const guild = interaction.guild;
 
     await interaction.reply({
