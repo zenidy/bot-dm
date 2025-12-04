@@ -362,9 +362,8 @@ client.on(Events.MessageCreate, async (message) => {
 
   await logChannel.send({
     content:
-      `DM\n` +
       `From: **${message.author.tag}** (\`${message.author.id}\`)\n` +
-      `Time: <t:${Math.floor(message.createdTimestamp / 1000)}:f>\n\n` +
+      `Time: <t:${Math.floor(message.createdTimestamp / 1000)}:f>\n` +
       `**Message:**\n${contentPreview}`
   }).catch(err => {
     console.error("Failed to send DM log message:", err);
