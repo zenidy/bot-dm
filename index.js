@@ -40,7 +40,9 @@ const {
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers   // needed to fetch all members and roles
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent
   ],
   partials: [Partials.Channel]
 });
@@ -320,7 +322,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (err) {
       console.error(`Failed to DM ${targetUser.tag}:`, err);
       await interaction.followUp({
-        content: `❌ Failed to DM <@${targetUser.id}>. They might have DMs disabled or blocked the bot.`,
+        content: `Failed to DM <@${targetUser.id}>. They might have DMs disabled or blocked the bot.`,
         ephemeral: true
       });
     }
