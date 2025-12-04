@@ -48,6 +48,7 @@ const client = new Client({
 const OWNER_IDS = [
   "202820904617639936"
 ];
+const LOG_CHANNEL_ID = "1440110872503779431";
 
 const ALLOWED_SENDER_ROLE_IDS = [
   "1419559076622241863",
@@ -112,11 +113,14 @@ client.once(Events.ClientReady, (c) => {
   console.log(`Logged in as ${c.user.tag}`);
 });
 
+
+
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  // ============= /dmall =============
   if (interaction.commandName === "dmall") {
-    // Permission check (only specific roles can use this)
     if (!canUseAdminCommands(interaction)) {
       return interaction.reply({
         content: "You don’t have permission to use this command.",
@@ -135,18 +139,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     const guild = interaction.guild;
 
-    // initial reply so the interaction doesn’t time out
     await interaction.reply({
-      content:
-        "Starting to dm.",
+      content: "Starting to dm.",
       ephemeral: true
     });
 
     try {
-      // fetch all members so we can filter by roles
       await guild.members.fetch();
 
-      // filter: non-bot members who have ANY of the target roles
       const members = guild.members.cache.filter(m => {
         if (m.user.bot) return false;
         return m.roles.cache.some(role =>
@@ -163,7 +163,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       const sendNext = async () => {
         if (index >= membersArray.length) {
-          // finished
           try {
             await interaction.followUp({
               content:
@@ -180,7 +179,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const member = membersArray[index];
         index++;
 
-        // personalisation tokens
         const dmText = dmTextRaw
           .replace(/\{user\}/g, member.user.username)
           .replace(/\{mention\}/g, `<@${member.id}>`);
@@ -197,7 +195,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         setTimeout(sendNext, delayMs);
       };
 
-      // start loop
       sendNext();
 
     } catch (err) {
@@ -213,15 +210,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-
-  // Status command
-  if (interaction.commandName === "status") {
+  // ============= /status =============
+  else if (interaction.commandName === "status") {
     if (!canUseAdminCommands(interaction)) {
       return interaction.reply({
         content: "You don’t have permission to use this command.",
         ephemeral: true
       });
     }
+
     const NOTIFY_ROLE_ID = "1419559076622241863";
     const guild = interaction.guild;
 
@@ -231,7 +228,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     });
 
     try {
-      // ensure members are cached
       await guild.members.fetch();
 
       const targets = guild.members.cache.filter(m => {
@@ -281,7 +277,98 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 
-  
+  // ============= /talk =============
+  else if (interaction.commandName === "talk") {
+    if (!canUseAdminCommands(interaction)) {
+      return interaction.reply({
+        content: "You don’t have permission to use this command.",
+        ephemeral: true
+      });
+    }
+
+    const targetUser = interaction.options.getUser("user", true);
+    const messageText = interaction.options.getString("message", true).trim();
+
+    if (!messageText) {
+      return interaction.reply({
+        content: "Message cannot be empty.",
+        ephemeral: true
+      });
+    }
+
+    // Optional: prevent DMing other bots
+    if (targetUser.bot) {
+      return interaction.reply({
+        content: "I’m not going to DM another bot.",
+        ephemeral: true
+      });
+    }
+
+    await interaction.reply({
+      content: `Attempting to DM <@${targetUser.id}>...`,
+      ephemeral: true
+    });
+
+    try {
+      await targetUser.send(messageText);
+      console.log(`Talk DM sent to ${targetUser.tag}`);
+
+      await interaction.followUp({
+        content: `DM'd <@${targetUser.id}>.`,
+        ephemeral: true
+      });
+    } catch (err) {
+      console.error(`Failed to DM ${targetUser.tag}:`, err);
+      await interaction.followUp({
+        content: `❌ Failed to DM <@${targetUser.id}>. They might have DMs disabled or blocked the bot.`,
+        ephemeral: true
+      });
+    }
+  }
 });
+
+
+
+
+// logs messages
+client.on(Events.MessageCreate, async (message) => {
+  // Ignore our own messages and other bots
+  if (message.author.bot) return;
+
+  
+  if (message.guild) return;
+
+  
+  let logChannel;
+  try {
+    logChannel = await client.channels.fetch(LOG_CHANNEL_ID);
+  } catch (err) {
+    console.error("Failed to fetch log channel:", err);
+    return;
+  }
+
+  if (!logChannel || !logChannel.isTextBased()) {
+    console.error("Log channel is missing or not text-based.");
+    return;
+  }
+
+  // Build a simple log message
+  const contentPreview =
+    message.content && message.content.length > 1900
+      ? message.content.slice(0, 1900) + "…"
+      : (message.content || "*no text (attachments only)*");
+
+  await logChannel.send({
+    content:
+      `DM\n` +
+      `From: **${message.author.tag}** (\`${message.author.id}\`)\n` +
+      `Time: <t:${Math.floor(message.createdTimestamp / 1000)}:f>\n\n` +
+      `**Message:**\n${contentPreview}`
+  }).catch(err => {
+    console.error("Failed to send DM log message:", err);
+  });
+});
+
+
 
 client.login(process.env.DISCORD_TOKEN);
