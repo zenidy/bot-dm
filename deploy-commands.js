@@ -14,7 +14,23 @@ const commands = [
     
   new SlashCommandBuilder()
     .setName("status")
-    .setDescription("DM the notify role that the bot is online and ready.")
+    .setDescription("DM the notify role that the bot is online and ready."),
+
+  new SlashCommandBuilder()
+    .setName("talk")
+    .setDescription("DM a specific user with a custom message.")
+    .addUserOption(option =>
+      option
+        .setName("user")
+        .setDescription("The user to DM")
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option
+        .setName("message")
+        .setDescription("The message to send to that user.")
+        .setRequired(true)
+    )
 ].map(cmd => cmd.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
