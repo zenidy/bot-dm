@@ -48,7 +48,8 @@ const client = new Client({
 });
 
 const OWNER_IDS = [
-  "202820904617639936"
+  "202820904617639936",
+  "243804696739840000"
 ];
 const LOG_CHANNEL_ID = "1440110872503779431";
 
